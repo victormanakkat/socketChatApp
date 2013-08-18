@@ -1,0 +1,19 @@
+canvas {
+	/*position: absolute; left: 10px; top: 10px;*/
+
+	border: 1px solid #888;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	-moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+	background-color: #eee;
+	
+	width: 480px;
+	height: 320px;
+}
+
+#btnClear {
+	/* position: absolute; left: 10px; top: 400px; */
+}

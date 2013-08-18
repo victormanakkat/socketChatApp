@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>The Chat Room</title>
+
+		<link rel="stylesheet" href="ui/lib/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.css" />
+		<link rel="stylesheet" href="ui/css/whiteboard.css" />
+		<script src="ui/lib/jquery-1.6.4.min.js"></script>
+		<script type="text/javascript" src="ui/lib/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" src="ui/lib/hammer/hammer.js"></script>
+		<script type="text/javascript" src="ui/lib/hammer/jquery.hammer.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="ui/js/whiteboard.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+        <style>
+		
+        </style>
+    </head>
+    
+    <body>
+		<div data-role="page" data-theme="a" id="pageLogin">
+			<div data-role="header" data-position="fixed">
+				<h1>Sign Into Chat Room</h1>
+			</div>
+			<div data-role="content">
+				
+				<form id="set-nickname" data-ajax="false">
+					<label for="nickname">Nickname:</label>
+					<input type="text" id="nickname" />
+					<input type="submit" data-icon="arrow-r" data-inline="true" value="Login" />
+				</form>
+			</div>
+			<div data-role="footer" data-position="fixed">
+				<h4>&copy; 2012 George Victor</h4>
+			</div>
+		</div>
+		
+		<div data-role="page" id="pageChat" data-theme="a" data-transition="slide">
+			<div data-role="header" data-position="fixed">
+				<h1>My Chat Room</h1>
+				<a href="#pageLogin" data-role="button" data-icon="home" data-inline="true">Logout</a>
+			</div>
+			<div data-role="content">								
+				<label for="nicknamesList">Online Users:</label>
+				<ul id="nicknamesList" data-role="listview" data-inset="true" data-inline="true" data-divider-theme="a"></ul>
+				
+				<label for="messages">Chat Messages:</label>
+				<div id="messages" style="height:200px; overflow: auto;" data-scroll="y"></div>
+				
+				<form id="send-message" data-ajax="false">
+					<label for="message">Type in a Message:</label>
+					<textarea id="message"></textarea>
+					<input type="submit" data-icon="arrow-l" data-inline="true" value="Send" />
+				</form>
+			</div>
+			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a href="#pageChat" class="ui-btn-active">Chat</a>
+						<li><a href="#whiteBoard">Whiteboard</a>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div data-role="page" id="whiteBoard" data-theme="a" data-transition="slide">
+			<div data-role="header" data-position="fixed">
+				<h1>Whiteboard</h1>
+				<a href="#pageLogin" data-role="button" data-icon="home" data-inline="true">Logout</a>
+			</div>
+			<div data-role="content">								
+				<canvas id="my_canvas"></canvas>
+				<a id="btnClear" data-role="button" data-icon="home" data-inline="true">Clear</a>
+			</div>
+			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a href="#pageChat" class="ui-btn-active">Chat</a>
+						<li><a href="#whiteBoard">Whiteboard</a>
+					</ul>
+				</div>
+			</div>
+		</div>
+        
+        <script>
+            var socket = io.connect();
+            jQuery(function ($)
+            {
+				console.log('Onload.');
+                var nickname = $('#nickname');
+                var setNicknameForm = $('#set-nickname');
+                var nicknamesList = $('#nicknamesList');
+                var messageForm = $('#send-message');
+                var message = $('#message');
+                var messages = $('#messages');
+				
+				//Overriding the form submission
+                setNicknameForm.submit(function (event)
+                {
+                    event.preventDefault();
+					//console.log('About to send the nickname.');
+                    socket.emit('nickname', nickname.val(), function (data)
+                    {
+                        if(data)
+                        {
+                            //console.log('Nickname set successfully');
+							$.mobile.changePage("#pageChat");
+                        }
+                        else
+                        {
+                            setNicknameForm.prepend('<p>Sorry - that nickname is already taken.</p>');
+                        }
+                    });
+                });
+				
+                messageForm.submit(function (event)
+                {
+                    event.preventDefault();
+					//console.log('About to send messages.', message.val());
+                    socket.emit('user message', message.val(), function (data)
+                    {
+                        if(data)
+                        {
+                            //console.log('Message Sent successfully');
+							//$.mobile.changePage("#pageChat");
+                        }
+                        else
+                        {
+                            console.log('Sending Message Failed');
+                        }
+                    });
+                    message.val('').focus();
+                });
+				
+				//Listen for Messages
+                socket.on('nicknames', function (data)
+                {
+                    var html = '';
+                    for(var i = 0; i < data.length; i++)
+                    {
+                        html += '<li>' + data[i] + '</li>';
+                    }
+                    nicknamesList.empty().append(html);
+                });
+                socket.on('user message', function (data)
+                {
+                    messages.append('<p><strong>' + data.nick + '</strong> ' + data.message + '</p>');
+                });
+				
+				
+				/* Whiteboard Section */
+				if($("#my_canvas") && $("#my_canvas").length > 0) {
+					loadCanvas();
+				}
+
+				$("#btnClear").bind("click", clearCanvas);
+				/* END: Whiteboard Section */
+            });
+        </script>
+    </body>
+
+</html>
