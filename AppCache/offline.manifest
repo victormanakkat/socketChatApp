@@ -1,0 +1,9 @@
+CACHE MANIFEST
+#Build = 1.1.119
+
+CACHE:
+js/main.js
+css/ios.css
+
+NETWORK:
+*

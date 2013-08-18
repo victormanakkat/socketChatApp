@@ -1,0 +1,44 @@
+body {
+    background-color: #CCC;
+}
+
+h1 {
+    color: white;
+    background-color: grey;
+    width: 100%;
+    text-align: center;
+}
+
+ul>li {
+	background-color: white;
+    padding: 10px;
+    list-style: none;
+    border: 1px solid grey;
+}
+
+ul#firstUl>li {
+    border-radius: 10px;
+}
+ul#secondUl>li {
+    border-bottom: 0px;
+}
+ul#secondUl>li:first-child {
+    border-top-left-radius:10px;
+    border-top-right-radius:10px;
+}
+ul#secondUl>li:last-child {
+    border-bottom-right-radius:10px;
+    border-bottom-left-radius:10px; 
+    border-bottom: 1px solid grey;
+    /*border-top: 0px;*/
+}
+
+a {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+}
+a:hover {
+    color: grey;
+}
