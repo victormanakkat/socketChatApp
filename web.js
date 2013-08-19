@@ -7,7 +7,7 @@ var app = require('express')(),
 	io = require('socket.io').listen(server),
     nicknames = [];
 //app.listen(process.env.VMC_APP_PORT || 1337, null);
-server.listen(process.env.VMC_APP_PORT || 1337);
+server.listen(process.env.PORT || 8080);
 
 app.use("/ui", express.static(__dirname + '/ui'));
 app.use("/AppCache", express.static(__dirname + '/AppCache'));
